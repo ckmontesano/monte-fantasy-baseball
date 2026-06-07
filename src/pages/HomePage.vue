@@ -10,7 +10,6 @@ import TabsComponent from "@/components/TabsComponent.vue";
 import { ref } from "vue";
 
 const activeTab = ref("standings");
-const isDisputeModalOpen = ref(false);
 const tabs = [
   { id: "standings", label: "Standings" },
   { id: "payouts", label: "Pools and Payouts" },
@@ -48,23 +47,16 @@ const poolsRows = [
 function getPoolsRowClass(row, rowIndex) {
   const baseClass = "odd:bg-zinc-100 odd:dark:bg-zinc-800/70";
 
-  return rowIndex === poolsRows.length - 1 ? `${baseClass} font-semibold` : baseClass;
-}
-
-function openDisputeModal() {
-  isDisputeModalOpen.value = true;
+  return rowIndex === poolsRows.length - 1
+    ? `${baseClass} font-semibold`
+    : baseClass;
 }
 </script>
 
 <template>
-  <div class="mb-2 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+  <div
+    class="mb-2 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
     <h1 class="text-4xl font-semibold tracking-tight">Home</h1>
-    <button
-      type="button"
-      class="accent-focus accent-outline-button inline-flex items-center self-start rounded-md border px-3 py-2 text-sm font-semibold transition"
-      @click="openDisputeModal">
-      Dispute Standings
-    </button>
   </div>
   <TabsComponent v-model="activeTab" :tabs="tabs" />
 
@@ -78,7 +70,9 @@ function openDisputeModal() {
       <MlbDivisionLeadersTable />
     </div>
   </div>
-  <div v-if="activeTab === 'payouts'" class="flex flex-col gap-4 pb-2 md:flex-row md:items-start md:gap-10">
+  <div
+    v-if="activeTab === 'payouts'"
+    class="flex flex-col gap-4 pb-2 md:flex-row md:items-start md:gap-10">
     <div class="mb-2 w-full min-w-0 flex-1 md:min-w-[350px]">
       <h2 class="mb-2 text-2xl font-semibold">Pools / Stakes</h2>
       <DataTable
