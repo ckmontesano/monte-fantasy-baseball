@@ -25,6 +25,15 @@ const allStarPlayers = ref([]);
 const ownerPoints = ref({});
 const winningLeague = ref(null);
 const gameDate = ref(null);
+const homeRunDerby = ref({
+  gameDate: null,
+  statusLabel: "Home Run Derby data has not been published yet.",
+  currentRound: null,
+  currentBatter: null,
+  currentRoundTimeLeft: null,
+  pickRows: [],
+  bracketRows: [],
+});
 
 const ownerPointsColumns = [
   { key: "owner", label: "Owner", sortable: true },
@@ -46,6 +55,39 @@ const rosterColumns = [
     sortable: true,
     sortDirection: "desc",
   },
+];
+
+const hrdPickColumns = [
+  { key: "owner", label: "Owner", sortable: true },
+  { key: "playerName", label: "Pick", sortable: true },
+  { key: "status", label: "Status", sortable: true },
+  { key: "furthestRoundLabel", label: "Furthest Round", sortable: true },
+  {
+    key: "homeRuns",
+    label: "HR",
+    sortable: true,
+    sortDirection: "desc",
+  },
+  {
+    key: "points",
+    label: "Points",
+    sortable: true,
+    sortDirection: "desc",
+  },
+];
+
+const hrdBracketColumns = [
+  { key: "roundLabel", label: "Round", sortable: true, sortValue: (row) => row.round },
+  { key: "matchup", label: "Matchup", sortable: true },
+  { key: "playerName", label: "Player", sortable: true },
+  { key: "seed", label: "Seed", sortable: true },
+  {
+    key: "homeRuns",
+    label: "HR",
+    sortable: true,
+    sortDirection: "desc",
+  },
+  { key: "result", label: "Result", sortable: true },
 ];
 
 const leagueTabs = computed(() => [
@@ -73,6 +115,10 @@ const ownerPointRows = computed(() =>
     .sort((left, right) => right.points - left.points),
 );
 
+const homeRunDerbyPickRows = computed(() => homeRunDerby.value.pickRows || []);
+
+const homeRunDerbyBracketRows = computed(() => homeRunDerby.value.bracketRows || []);
+
 function formatGameDate(dateString) {
   if (!dateString) {
     return null;
@@ -91,11 +137,13 @@ onMounted(async () => {
     ownerPoints: points,
     winningLeague: winner,
     gameDate: officialDate,
+    homeRunDerby: derbyData,
   } = await getAllStarBreakData();
   allStarPlayers.value = players;
   ownerPoints.value = points;
   winningLeague.value = winner;
   gameDate.value = officialDate;
+  homeRunDerby.value = derbyData;
 
 });
 </script>
@@ -118,7 +166,7 @@ onMounted(async () => {
     empty-message="No All-Star points have been awarded yet." />
 
   <p v-if="formatGameDate(gameDate)" class="mb-3 text-sm text-zinc-600 dark:text-zinc-300">
-    Live All-Star data for {{ formatGameDate(gameDate) }}. Winning league bonus applies automatically.
+    Live All-Star data for {{ formatGameDate(gameDate) }}. Winning league and Home Run Derby bonuses apply automatically.
   </p>
   <p v-else class="mb-3 text-sm text-zinc-600 dark:text-zinc-300">
     All-Star rosters will appear here once MLB publishes the current season game data.
@@ -196,8 +244,35 @@ onMounted(async () => {
       If nobody picks the champion, the pick that advanced farthest wins instead. Ties
       still award the full 40 points to each tied winner.
     </p>
-    <p class="rounded-md border border-zinc-300 bg-zinc-100 px-4 py-3 text-sm dark:border-zinc-700 dark:bg-zinc-800/70">
-      2026 Home Run Derby picks have not been submitted yet.
-    </p>
+    <div class="mb-6 rounded-md border border-zinc-300 bg-zinc-100 px-4 py-3 text-sm dark:border-zinc-700 dark:bg-zinc-800/70">
+      <p><strong>Status:</strong> {{ homeRunDerby.statusLabel }}</p>
+      <p v-if="formatGameDate(homeRunDerby.gameDate)">
+        <strong>Date:</strong> {{ formatGameDate(homeRunDerby.gameDate) }}
+      </p>
+      <p v-if="homeRunDerby.currentRound">
+        <strong>Current Round:</strong> {{ homeRunDerby.currentRound }}
+      </p>
+      <p v-if="homeRunDerby.currentBatter">
+        <strong>Current Batter:</strong> {{ homeRunDerby.currentBatter }}
+      </p>
+      <p v-if="homeRunDerby.currentRoundTimeLeft">
+        <strong>Time Left:</strong> {{ homeRunDerby.currentRoundTimeLeft }}
+      </p>
+    </div>
+
+    <h3 class="mb-2 text-xl font-semibold">Picks</h3>
+    <DataTable
+      class="mb-8"
+      :columns="hrdPickColumns"
+      :rows="homeRunDerbyPickRows"
+      row-key="owner"
+      empty-message="No Home Run Derby picks have been submitted yet." />
+
+    <h3 class="mb-2 text-xl font-semibold">Derby Tracker</h3>
+    <DataTable
+      :columns="hrdBracketColumns"
+      :rows="homeRunDerbyBracketRows"
+      row-key="id"
+      empty-message="MLB has not published Home Run Derby bracket data yet." />
   </div>
 </template>

@@ -31,6 +31,13 @@ export const STAKES = {
 
 export const TOTAL_SEASON_BUY_IN = STAKES.totalCommitment * OWNERS.length;
 
+export const HOME_RUN_DERBY_PICKS = [
+  { owner: "Cameron", playerId: 656941, playerName: "Kyle Schwarber" },
+  { owner: "Caden", playerId: 808959, playerName: "Munetaka Murakami" },
+  { owner: "Jack", playerId: 547180, playerName: "Bryce Harper" },
+  { owner: "Dad", playerId: 691406, playerName: "Junior Caminero" },
+];
+
 export const TEAM_DRAFT_BOARD = [
   { teamId: 136, teamName: "Mariners", owner: "Dad", odds: -105, draftRound: 1 },
   { teamId: 143, teamName: "Phillies", owner: "Dad", odds: 190, draftRound: 2 },
