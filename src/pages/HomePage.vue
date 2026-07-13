@@ -1,11 +1,11 @@
 <script setup>
 // components
 import { STAKES } from "@/data/season-2026.js";
-import AppModal from "@/components/AppModal.vue";
 import DataTable from "@/components/DataTable.vue";
 import MlbDivisionLeadersTable from "@/components/MlbDivisionLeadersTable.vue";
 import FantasyStandingsTable from "@/components/FantasyStandingsTable.vue";
 import PayoutHistoryTable from "@/components/PayoutHistoryTable.vue";
+import SeasonBalancesTable from "@/components/SeasonBalancesTable.vue";
 import TabsComponent from "@/components/TabsComponent.vue";
 import { ref } from "vue";
 
@@ -70,10 +70,18 @@ function getPoolsRowClass(row, rowIndex) {
       <MlbDivisionLeadersTable />
     </div>
   </div>
-  <div
-    v-if="activeTab === 'payouts'"
-    class="flex flex-col gap-4 pb-2 md:flex-row md:items-start md:gap-10">
-    <div class="mb-2 w-full min-w-0 flex-1 md:min-w-[350px]">
+  <div v-if="activeTab === 'payouts'">
+    <div class="flex flex-col gap-4 pb-2 md:flex-row md:items-start md:gap-10">
+      <div class="mb-2 w-full min-w-0 flex-1 md:min-w-[350px]">
+        <h2 class="mb-2 text-2xl font-semibold">Season Balances</h2>
+        <SeasonBalancesTable />
+      </div>
+      <div class="mb-2 w-full min-w-0 flex-1 md:min-w-[350px]">
+        <h2 class="mb-2 text-2xl font-semibold">Payout History</h2>
+        <PayoutHistoryTable />
+      </div>
+    </div>
+    <div>
       <h2 class="mb-2 text-2xl font-semibold">Pools / Stakes</h2>
       <DataTable
         :columns="poolsColumns"
@@ -84,13 +92,5 @@ function getPoolsRowClass(row, rowIndex) {
         March does not count toward monthly regular-season winners.
       </p>
     </div>
-    <div class="mb-2 w-full min-w-0 flex-1 md:min-w-[350px]">
-      <h2 class="mb-2 text-2xl font-semibold">Payout History</h2>
-      <PayoutHistoryTable />
-    </div>
   </div>
-
-  <AppModal v-model="isDisputeModalOpen" title="Standing Dispute">
-    <p class="text-base">Go fuck yourself I'm the commissioner 🖕</p>
-  </AppModal>
 </template>

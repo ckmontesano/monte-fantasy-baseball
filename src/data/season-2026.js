@@ -29,6 +29,8 @@ export const STAKES = {
   totalCommitment: 200,
 };
 
+export const TOTAL_SEASON_BUY_IN = STAKES.totalCommitment * OWNERS.length;
+
 export const TEAM_DRAFT_BOARD = [
   { teamId: 136, teamName: "Mariners", owner: "Dad", odds: -105, draftRound: 1 },
   { teamId: 143, teamName: "Phillies", owner: "Dad", odds: 190, draftRound: 2 },
