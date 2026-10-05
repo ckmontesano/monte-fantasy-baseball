@@ -19,6 +19,7 @@ const monthOrder = {
   July: 7,
   August: 8,
   September: 9,
+  Playoffs: 10,
 };
 
 const columns = [

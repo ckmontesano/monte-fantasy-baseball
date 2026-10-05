@@ -3,6 +3,7 @@ import NavigationBar from "@/components/NavigationBar.vue";
 import Footer from "@/components/Footer.vue";
 
 import HomePage from "@/pages/HomePage.vue";
+import PlayoffsPage from "@/pages/PlayoffsPage.vue";
 import TeamsPage from "@/pages/TeamsPage.vue";
 import AllStarBreakPage from "@/pages/AllStarBreakPage.vue";
 import RulesPage from "@/pages/RulesPage.vue";
@@ -12,7 +13,9 @@ import NotFound from "@/pages/NotFound.vue";
 import { ref, computed } from "vue";
 
 const routes = {
-  "/": HomePage,
+  "/": PlayoffsPage,
+  "/regular-season": HomePage,
+  "/playoffs": PlayoffsPage,
   "/teams": TeamsPage,
   "/all-star-break": AllStarBreakPage,
   "/rules": RulesPage,

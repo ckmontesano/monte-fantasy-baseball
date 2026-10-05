@@ -36,7 +36,7 @@ const playoffItems = [
   "Correct Championship Series winner = 20 points.",
   "Correct World Series winner = 30 points.",
   "Every series offers 1 bonus point for predicting the exact series length, but only if the series winner is also correct. A wrong winner earns 0 points, even with the correct length.",
-  "A perfect bracket earns 121 points across all 11 series.",
+  "A perfect bracket earns 141 points across all 11 series.",
   "The playoff pool is $50 per person ($200 total). Highest bracket points wins the full pool, including returned deposits; tied winners split it equally.",
 ];
 

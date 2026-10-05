@@ -1,5 +1,8 @@
 import { ref, onMounted } from "vue";
-import { SEASON, STAKES } from "@/data/season-2026.js";
+import { SEASON, STAKES, OWNERS } from "@/data/season-2026.js";
+import { PLAYOFF_BRACKETS, PICKS_ARE_PLACEHOLDERS } from "@/data/playoff-brackets-2026.js";
+import { calculatePlayoffPayout, normalizePlayoffSeries } from "@/scripts/playoff-scoring.js";
+import { fetchPlayoffGames } from "@/scripts/mlb-playoffs.js";
 import { calculateRegularSeasonPoints } from "@/scripts/regular-season-scoring.js";
 import { getAllStarBreakData } from "@/scripts/allstar-break-logic.js";
 import getMlbStandings from "@/scripts/mlb-standings.js";
@@ -103,9 +106,18 @@ async function loadPayoutHistory({ forceRefresh = false } = {}) {
       }),
     ),
     getAllStarBreakData(),
+    PICKS_ARE_PLACEHOLDERS ? Promise.resolve(null) : fetchPlayoffGames().then((games) => {
+      const result = calculatePlayoffPayout(normalizePlayoffSeries(games), PLAYOFF_BRACKETS,
+        STAKES.playoffs.wager * OWNERS.length, false);
+      if (!result) return null;
+      const finalGames = games.filter((game) => game.gameType === "W" && game.status?.abstractGameState === "Final");
+      return { date: "Playoffs", winner: result.winners.join(", "), amount: result.amount,
+        snapshotDate: `${SEASON}-playoffs`, gamePk: finalGames.at(-1)?.gamePk };
+    }),
   ])
-    .then(([monthlyHistory, allStarData]) => {
+    .then(([monthlyHistory, allStarData, playoffEntry]) => {
       const history = monthlyHistory.filter(Boolean);
+      if (playoffEntry) history.push(playoffEntry);
       const gameDate = allStarData?.gameDate;
       const ownerPoints = allStarData?.ownerPoints || {};
 

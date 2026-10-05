@@ -49,7 +49,8 @@ function openSettings() {
 }
 
 const navLinks = [
-  { href: "#/", label: "Home" },
+  { href: "#/", label: "Playoffs" },
+  { href: "#/regular-season", label: "Regular Season" },
   { href: "#/teams", label: "Teams" },
   { href: "#/all-star-break", label: "All-Star Break" },
   { href: "#/mlb-standings", label: "MLB Standings" },

@@ -58,7 +58,7 @@ function getPoolsRowClass(row, rowIndex) {
 <template>
   <div
     class="mb-2 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-    <h1 class="text-4xl font-semibold tracking-tight">Home</h1>
+    <h1 class="text-4xl font-semibold tracking-tight">Regular Season</h1>
   </div>
   <TabsComponent v-model="activeTab" :tabs="tabs" />
 

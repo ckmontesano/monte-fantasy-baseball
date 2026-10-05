@@ -123,8 +123,9 @@ Playoffs are a separate, bracket-based prediction competition. Points reset; reg
 - Every series offers a +1 bonus for correctly predicting both the winner and the exact series length (clinching game number).
 - Correct winner, wrong series length: award the round's base points only.
 - Wrong winner: award 0 points, even if the predicted series length is correct.
+- Submitted lengths exceeding a round's maximum are capped at its last possible game (Wild Card 3, Division Series 5, Championship/World Series 7). The capped length is eligible for the bonus when the winner is correct; retain original submissions and document each adjustment on the Playoffs page.
 - Example: a correctly predicted Division Series winner in four games earns 11 points if it wins in four, 10 if it wins in another number of games, and 0 if it loses.
-- A perfect bracket earns 121 points: 110 base points across all 11 series (four Wild Card, four Division Series, two Championship Series, one World Series), plus 11 bonuses.
+- A perfect bracket earns 141 points: 130 base points across all 11 series (four Wild Card = 20, four Division Series = 40, two Championship Series = 40, one World Series = 30), plus 11 bonuses.
 
 ### Playoff Winner and Payout
 
