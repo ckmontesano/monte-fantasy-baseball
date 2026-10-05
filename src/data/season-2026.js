@@ -15,13 +15,14 @@ export const ROUND_MULTIPLIERS = {
 export const STAKES = {
   monthly: {
     wager: 20,
-    payout: 60,
+    // Gross pool payout, including the winner's returned entry deposit.
+    payout: 20 * OWNERS.length,
     months: ["April", "May", "June", "July", "August", "September"],
     excludes: ["March"],
   },
   allStar: {
     wager: 30,
-    payout: 90,
+    payout: 30 * OWNERS.length,
   },
   playoffs: {
     wager: 50,

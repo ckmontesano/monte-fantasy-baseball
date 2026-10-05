@@ -4,7 +4,7 @@ import {
   getTeamSeasonMetadata,
 } from "@/data/season-2026.js";
 
-const STANDINGS_CACHE_KEY = `mlb-standings-${SEASON}`;
+const STANDINGS_CACHE_KEY = `mlb-standings-${SEASON}-v2`;
 const STANDINGS_CACHE_TTL_MS = 60 * 60 * 1000;
 const STANDINGS_FIELDS = [
   "records",
@@ -19,6 +19,9 @@ const STANDINGS_FIELDS = [
   "id",
   "name",
   "divisionLeader",
+  "divisionChamp",
+  "clinched",
+  "wildCardLeader",
   "wins",
   "losses",
   "winningPercentage",

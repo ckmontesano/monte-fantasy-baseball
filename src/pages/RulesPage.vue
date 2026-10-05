@@ -13,17 +13,18 @@ const ruleChanges = [
 
 const regularSeasonItems = [
   "Monthly winners are decided from April through September. March does not count.",
-  "Each month is a $20 per person pool, and the winner gets $60.",
+  "Each month is a $20 per person pool. The winner receives $80 total: $60 net winnings plus their $20 entry deposit back.",
   "Team points are based on a $100 draft-day odds calculation, then prorated by draft round.",
   "Round multipliers are: round 1 = 1, round 2 = 6/7, round 3 = 5/7, round 4 = 4/7, round 5 = 3/7, round 6 = 2/7, round 7 = 1/7.",
-  "Wild-card teams are scored only at the end of the regular season, not in monthly standings.",
+  "September includes division-winner points plus wild-card points for playoff qualifiers that did not win their division. April–August remain division-only.",
+  "Wild-card points use the fixed March 25, 2026 FanGraphs Make Playoffs percentages, converted to American odds and prorated using the same draft-round multipliers. Only final team points are rounded. A team cannot receive both awards.",
 ];
 
 const allStarItems = [
   "All-Star Break is a separate competition and does not count toward monthly or season standings.",
   "Each active-roster All-Star earns 6 points for that MLB team's fantasy owner.",
   "If that player is on the winning league, add 6 bonus points.",
-  "The All-Star pool is $30 per person, and the winner gets $90.",
+  "The All-Star pool is $30 per person. The winner receives $120 total: $90 net winnings plus their $30 entry deposit back.",
   "Home Run Derby winner picks are worth 40 points. If nobody picks the champion, the pick that advanced farthest wins instead.",
 ];
 

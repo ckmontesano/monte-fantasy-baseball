@@ -13,11 +13,13 @@ This document is the normalized operating guide for agents and maintainers. It p
 
 - Regular season scoring months: April, May, June, July, August, September.
 - March is excluded from monthly winner calculations.
-- Monthly wager: $20 per person; monthly winner payout: $60.
-- All-Star event is a separate pool: $30 per person; winner payout: $90.
+- Monthly wager: $20 per person; four-owner gross winner payout: $80 ($60 net winnings plus the returned $20 deposit).
+- All-Star event is a separate pool: $30 per person; four-owner gross winner payout: $120 ($90 net winnings plus the returned $30 deposit).
 - Playoffs are a separate pool: $50 per person.
 - Total annual commitment per person: $200.
 - Wagers are collected on draft day and held for end-of-season distribution.
+- Payout history and season winnings count gross awards, including returned deposits. The unallocated pot is total collected deposits minus gross awards, not cash already disbursed. Shared awards split the full pool once, with no additional deposit refund.
+- With four owners: $800 collected minus six $80 monthly awards and one $120 All-Star award leaves $200 allocated to the playoff pool.
 
 ## Regular Season Monthly Winner Logic
 
@@ -47,7 +49,7 @@ basePoints = 100 * ((100 / |Y|) + 1)
 ### 2) Apply round-based prorate multiplier
 
 ```text
-multiplier = (10 - draftRound) / 10
+multiplier = (8 - draftRound) / 7 // rounds 1 through 7
 finalPoints = round(basePoints * multiplier)
 ```
 
@@ -77,10 +79,15 @@ No shared division points in ties; follow deterministic MLB-style resolution.
 
 ## Wild Card Team Points (End of Season)
 
-Wild card teams (playoff teams that did not win division) are scored only at end of season.
+Wild card teams (playoff teams that did not win their division) earn points in September only, alongside division-winner points. April–August remain division-only. This odds-based rule supersedes the previous 75%-of-average rule.
 
-1. Compute average points earned by all division leaders.
-2. Wild card team points = 75% of that average.
+1. Use the fixed **Make Playoffs** percentages supplied by the league from [FanGraphs, March 25, 2026](https://www.fangraphs.com/standings/playoff-odds/fg/div?date=2026-03-25), stored in `src/data/playoff-odds-2026.js`.
+2. With `p = percentage / 100`, convert to American odds: `100 * (1 - p) / p` for `p <= 0.5`, otherwise `-100 * p / (1 - p)`.
+3. Apply the same $100 return and round multiplier as division points, retaining full precision until final team points are rounded. Equivalently, `round((100 / p) * multiplier)`.
+4. Only confirmed playoff qualifiers that did not win a division receive wild-card awards. Division winners receive their existing division points only; undrafted teams earn no owner points.
+5. September payouts wait for all six division champions and six wild-card qualifiers to be confirmed. The September Points tab labels partial results as pending. Season regular-season standings are used so a delayed finish is included.
+
+Missing or zero probabilities require resolution rather than silently awarding zero points.
 
 ## All-Star Break Scoring (Separate Competition)
 

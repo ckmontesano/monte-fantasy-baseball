@@ -6,12 +6,14 @@ import MlbDivisionLeadersTable from "@/components/MlbDivisionLeadersTable.vue";
 import FantasyStandingsTable from "@/components/FantasyStandingsTable.vue";
 import PayoutHistoryTable from "@/components/PayoutHistoryTable.vue";
 import SeasonBalancesTable from "@/components/SeasonBalancesTable.vue";
+import SeptemberPointsTable from "@/components/SeptemberPointsTable.vue";
 import TabsComponent from "@/components/TabsComponent.vue";
 import { ref } from "vue";
 
 const activeTab = ref("standings");
 const tabs = [
   { id: "standings", label: "Standings" },
+  { id: "september", label: "September Points" },
   { id: "payouts", label: "Pools and Payouts" },
 ];
 
@@ -25,12 +27,12 @@ const poolsRows = [
   {
     pool: "Regular Season",
     stake: `$${STAKES.monthly.wager}/person each month`,
-    payout: `$${STAKES.monthly.payout} monthly winner`,
+    payout: `$${STAKES.monthly.payout} including returned entry`,
   },
   {
     pool: "All-Star Break",
     stake: `$${STAKES.allStar.wager}/person`,
-    payout: `$${STAKES.allStar.payout} winner`,
+    payout: `$${STAKES.allStar.payout} including returned entry`,
   },
   {
     pool: "Playoffs",
@@ -70,6 +72,7 @@ function getPoolsRowClass(row, rowIndex) {
       <MlbDivisionLeadersTable />
     </div>
   </div>
+  <SeptemberPointsTable v-if="activeTab === 'september'" />
   <div v-if="activeTab === 'payouts'">
     <div class="flex flex-col gap-4 pb-2 md:flex-row md:items-start md:gap-10">
       <div class="mb-2 w-full min-w-0 flex-1 md:min-w-[350px]">

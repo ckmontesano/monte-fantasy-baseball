@@ -1,5 +1,6 @@
 import { ref, onMounted } from "vue";
-import { OWNERS, SEASON, STAKES } from "@/data/season-2026.js";
+import { SEASON, STAKES } from "@/data/season-2026.js";
+import { calculateRegularSeasonPoints } from "@/scripts/regular-season-scoring.js";
 import { getAllStarBreakData } from "@/scripts/allstar-break-logic.js";
 import getMlbStandings from "@/scripts/mlb-standings.js";
 
@@ -38,28 +39,13 @@ function getMonthEndDate(monthNumber) {
   return new Date(Date.UTC(SEASON, monthNumber, 0)).toISOString().slice(0, 10);
 }
 
-function calculateOwnerPoints(standings) {
-  const ownerPoints = Object.fromEntries(OWNERS.map((owner) => [owner, 0]));
-
-  for (const league of Object.values(standings || {})) {
-    for (const division of Object.values(league)) {
-      if (!division.leader?.team) {
-        continue;
-      }
-
-      const owner = division.leader.team.owner;
-
-      if (ownerPoints[owner] !== undefined) {
-        ownerPoints[owner] += division.leader.team.fantasyPoints || 0;
-      }
-    }
-  }
-
-  return ownerPoints;
-}
-
 function buildPayoutEntry(label, snapshotDate, standings) {
-  const ownerPoints = calculateOwnerPoints(standings);
+  const scoring = calculateRegularSeasonPoints(standings, { september: label === "September" });
+  if (label === "September" && !scoring.isFinal) return null;
+  if (label !== "September" && !scoring.isComplete) {
+    throw new Error(`${label} standings are incomplete. Payout totals are unavailable until all six division leaders are available.`);
+  }
+  const { ownerPoints } = scoring;
   const sortedOwners = Object.entries(ownerPoints).sort(
     (left, right) => right[1] - left[1] || left[0].localeCompare(right[0]),
   );
@@ -98,7 +84,7 @@ function buildAllStarPayoutEntry(gameDate, ownerPoints) {
   };
 }
 
-async function loadPayoutHistory() {
+async function loadPayoutHistory({ forceRefresh = false } = {}) {
   if (pendingRequest) {
     return pendingRequest;
   }
@@ -110,7 +96,8 @@ async function loadPayoutHistory() {
     Promise.all(
       getCompletedScoringMonths().map(async ({ label, monthNumber }) => {
         const snapshotDate = getMonthEndDate(monthNumber);
-        const { standings } = await getMlbStandings({ dateString: snapshotDate });
+        // Season standings retain final regular-season qualifiers during the playoffs.
+        const { standings } = await getMlbStandings({ dateString: monthNumber === 9 ? null : snapshotDate, forceRefresh });
 
         return buildPayoutEntry(label, snapshotDate, standings);
       }),
@@ -118,7 +105,7 @@ async function loadPayoutHistory() {
     getAllStarBreakData(),
   ])
     .then(([monthlyHistory, allStarData]) => {
-      const history = [...monthlyHistory];
+      const history = monthlyHistory.filter(Boolean);
       const gameDate = allStarData?.gameDate;
       const ownerPoints = allStarData?.ownerPoints || {};
 
@@ -157,6 +144,6 @@ export function usePayoutHistory() {
     payoutHistory,
     isLoading,
     error,
-    refreshPayoutHistory: loadPayoutHistory,
+    refreshPayoutHistory: () => loadPayoutHistory({ forceRefresh: true }),
   };
 }

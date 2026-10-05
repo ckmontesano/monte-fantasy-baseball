@@ -4,7 +4,11 @@ import DataTable from "@/components/DataTable.vue";
 import { usePayoutHistory } from "@/composables/usePayoutHistory.js";
 import { OWNERS, SEASON, TOTAL_SEASON_BUY_IN } from "@/data/season-2026.js";
 
-const { isLoading, payoutHistory } = usePayoutHistory();
+const { isLoading, payoutHistory, error, refreshPayoutHistory } = usePayoutHistory();
+
+function retry() {
+  refreshPayoutHistory().catch(() => {});
+}
 
 const columns = [
   { key: "owner", label: "Owner", sortable: true },
@@ -56,14 +60,26 @@ const potRemaining = computed(() => TOTAL_SEASON_BUY_IN - totalSeasonWinnings.va
 </script>
 
 <template>
-  <DataTable
-    :columns="columns"
-    :rows="rows"
-    row-key="owner"
-    :empty-message="isLoading ? 'Loading season balances...' : `No ${SEASON} payouts yet.`">
-    <template #cell-winnings="{ row }">{{ formatCurrency(row.winnings) }}</template>
-  </DataTable>
-  <p class="mt-2 text-sm font-semibold text-zinc-700 dark:text-zinc-200">
-    Pot Remaining: {{ formatCurrency(potRemaining) }}
-  </p>
+  <p v-if="isLoading" role="status">Loading season balances…</p>
+  <div v-else-if="error" role="alert">
+    <p>Season balances are unavailable because payout data could not be loaded.</p>
+    <p class="mt-1 text-sm">{{ error.message }}</p>
+    <button class="accent-link mt-2" @click="retry">Retry payout data</button>
+  </div>
+  <template v-else>
+    <DataTable
+      :columns="columns"
+      :rows="rows"
+      row-key="owner"
+      :empty-message="`No ${SEASON} payouts yet.`">
+      <template #cell-winnings="{ row }">{{ formatCurrency(row.winnings) }}</template>
+    </DataTable>
+    <p class="mt-2 text-sm font-semibold text-zinc-700 dark:text-zinc-200">
+      Unallocated Pot: {{ formatCurrency(potRemaining) }}
+    </p>
+    <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+      Winnings include returned entry deposits. The unallocated pot is collected funds
+      not yet awarded; payouts are held for end-of-season distribution.
+    </p>
+  </template>
 </template>

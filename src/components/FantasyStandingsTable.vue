@@ -108,6 +108,7 @@ watch(
     </DataTable>
     <div class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
       <strong>Key:</strong> Regular-season points from the current division leaders only.
+      September division and wild-card earnings are shown in the September Points tab.
     </div>
     <div class="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
       All-Star Break points are tracked separately on the All-Star Break page.

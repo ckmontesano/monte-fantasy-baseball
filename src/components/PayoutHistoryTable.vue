@@ -3,7 +3,11 @@ import { SEASON } from "@/data/season-2026.js";
 import DataTable from "@/components/DataTable.vue";
 import { usePayoutHistory } from "@/composables/usePayoutHistory.js";
 
-const { isLoading, payoutHistory } = usePayoutHistory();
+const { isLoading, payoutHistory, error, refreshPayoutHistory } = usePayoutHistory();
+
+function retry() {
+  refreshPayoutHistory().catch(() => {});
+}
 
 const monthOrder = {
   April: 4,
@@ -28,7 +32,13 @@ const columns = [
 </script>
 
 <template>
+  <p v-if="isLoading" role="status">Loading payout history…</p>
+  <div v-else-if="error" role="alert">
+    <p>Payout history is unavailable. Please retry loading the results.</p>
+    <button class="accent-link mt-2" @click="retry">Retry payout data</button>
+  </div>
   <DataTable
+    v-else
     :columns="columns"
     :rows="payoutHistory"
     row-key="snapshotDate"
