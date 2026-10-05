@@ -17,6 +17,7 @@ Vue 3 site for the Montesano Fantasy Baseball league, updated for the 2026 seaso
 - Regular-season team points are now calculated from true draft-day division odds, including negative odds.
 - Draft value is prorated by round. Round 1 keeps full value, and rounds 2-7 step down by sevenths.
 - Wild-card teams are now worth points, but only at end of season.
+- Playoffs are a separate full-bracket prediction contest submitted before postseason play. Team ownership does not apply. Correct series winners earn 5/10/20/30 points by round; every series adds 1 point for the correct length only when the winner is also correct. Tied winners split the $200 pool. See `docs/league-context.md` for the complete rules.
 - Special-case bonuses such as no-hitters or player record events are gone.
 - Tie-breakers now follow MLB-style tie-break ordering instead of point sharing inside divisions.
 

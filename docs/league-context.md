@@ -107,13 +107,31 @@ All-Star scoring is independent from regular-season monthly scoring.
 
 ## Playoffs Scoring (Separate Competition)
 
-Playoff points reset; regular-season winner is already crowned.
+Playoffs are a separate, bracket-based prediction competition. Points reset; regular-season results do not carry over. Drafted MLB team ownership, preseason odds, and draft-round multipliers do not apply.
 
-- Wild Card series win: 5 points
-- Division Series win: 10 points
-- Championship Series win: 20 points
-- World Series win: 30 points
-- Bonus: +1 for correctly predicting both winner and exact clinching game number.
+### Bracket Submission
+
+- Each participant submits a full bracket just before the playoffs begin.
+- All series-winner and series-length predictions are made before the playoffs start, rather than before each round.
+
+### Series Prediction Points
+
+- Correct Wild Card series winner: 5 points
+- Correct Division Series winner: 10 points
+- Correct Championship Series winner: 20 points
+- Correct World Series winner: 30 points
+- Every series offers a +1 bonus for correctly predicting both the winner and the exact series length (clinching game number).
+- Correct winner, wrong series length: award the round's base points only.
+- Wrong winner: award 0 points, even if the predicted series length is correct.
+- Example: a correctly predicted Division Series winner in four games earns 11 points if it wins in four, 10 if it wins in another number of games, and 0 if it loses.
+- A perfect bracket earns 121 points: 110 base points across all 11 series (four Wild Card, four Division Series, two Championship Series, one World Series), plus 11 bonuses.
+
+### Playoff Winner and Payout
+
+- Highest total bracket points wins the playoff pool.
+- Entry is $50 per person; four participants create a $200 gross pool, including returned entry deposits.
+- Tied highest-scoring participants split the full pool equally. For example, two winners receive $100 each. Do not add a separate deposit refund.
+- The regular-season MLB tie-break procedures do not apply to ties in playoff bracket points.
 
 ## Operational Decision Checklist for Agents
 
