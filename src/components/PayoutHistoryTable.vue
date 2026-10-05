@@ -3,6 +3,8 @@ import { SEASON } from "@/data/season-2026.js";
 import DataTable from "@/components/DataTable.vue";
 import { usePayoutHistory } from "@/composables/usePayoutHistory.js";
 
+const emit = defineEmits(["show-september"]);
+
 const { isLoading, payoutHistory, error, refreshPayoutHistory } = usePayoutHistory();
 
 function retry() {
@@ -43,7 +45,16 @@ const columns = [
     :rows="payoutHistory"
     row-key="snapshotDate"
     :empty-message="isLoading ? 'Loading payout history...' : `No ${SEASON} payout results yet.`">
-    <template #cell-date="{ row }">{{ row.date }}</template>
+    <template #cell-date="{ row }">
+      {{ row.date }}
+      <button
+        v-if="row.date === 'September'"
+        type="button"
+        class="accent-link ml-2 whitespace-nowrap underline"
+        @click="emit('show-september')">
+        See Details
+      </button>
+    </template>
     <template #cell-winner="{ row }">{{ row.winner }}</template>
     <template #cell-amount="{ row }">${{ row.amount }}</template>
   </DataTable>

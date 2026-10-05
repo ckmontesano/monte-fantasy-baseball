@@ -13,8 +13,8 @@ import { ref } from "vue";
 const activeTab = ref("standings");
 const tabs = [
   { id: "standings", label: "Standings" },
-  { id: "september", label: "September Points" },
   { id: "payouts", label: "Pools and Payouts" },
+  { id: "september", label: "September Points" },
 ];
 
 const poolsColumns = [
@@ -81,7 +81,7 @@ function getPoolsRowClass(row, rowIndex) {
       </div>
       <div class="mb-2 w-full min-w-0 flex-1 md:min-w-[350px]">
         <h2 class="mb-2 text-2xl font-semibold">Payout History</h2>
-        <PayoutHistoryTable />
+        <PayoutHistoryTable @show-september="activeTab = 'september'" />
       </div>
     </div>
     <div>
