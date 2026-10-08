@@ -1,7 +1,7 @@
-import { HOME_RUN_DERBY_PICKS, SEASON } from "@/data/season-2026.js";
+import { HOME_RUN_DERBY_EVENT, HOME_RUN_DERBY_PICKS, SEASON } from "@/data/season-2026.js";
 import getMlbStandings from "@/scripts/mlb-standings.js";
 
-const ALL_STAR_CACHE_KEY = `all-star-break-${SEASON}-v2`;
+const ALL_STAR_CACHE_KEY = `all-star-break-${SEASON}-v6`;
 const ALL_STAR_CACHE_TTL_MS = 12 * 60 * 60 * 1000;
 const HOME_RUN_DERBY_POINTS = 40;
 
@@ -99,48 +99,20 @@ async function findAllStarGame() {
   return games[0] || null;
 }
 
-async function findHomeRunDerbyEvent() {
-  const scheduleUrl = new URL("https://statsapi.mlb.com/api/v1/schedule");
-
-  scheduleUrl.searchParams.set("sportId", "1");
-  scheduleUrl.searchParams.set("season", String(SEASON));
-  scheduleUrl.searchParams.set("startDate", `${SEASON}-07-01`);
-  scheduleUrl.searchParams.set("endDate", `${SEASON}-07-31`);
-  scheduleUrl.searchParams.set("gameTypes", "D");
-  scheduleUrl.searchParams.set(
-    "fields",
-    [
-      "dates",
-      "games",
-      "gamePk",
-      "gameDate",
-      "officialDate",
-      "status",
-      "detailedState",
-      "abstractGameState",
-      "seriesDescription",
-    ].join(","),
-  );
-
-  const schedule = await fetchJson(scheduleUrl.toString());
-  const games = schedule.dates?.flatMap((date) => date.games || []) || [];
-
-  return games[0] || null;
-}
-
-function getEmptyHomeRunDerbyData(message = "Home Run Derby data has not been published yet.") {
+function getEmptyHomeRunDerbyData(message, derbyEvent = null) {
   return {
-    gamePk: null,
-    gameDate: null,
+    gamePk: derbyEvent?.gamePk || null,
+    gameDate: derbyEvent?.officialDate || null,
     statusLabel: message,
     currentRound: null,
     currentBatter: null,
     currentRoundTimeLeft: null,
     pickRows: HOME_RUN_DERBY_PICKS.map((pick) => ({
       ...pick,
-      status: "Pending",
+      status: "Results unavailable",
       furthestRound: null,
-      homeRuns: 0,
+      furthestRoundLabel: "—",
+      homeRuns: null,
       points: 0,
     })),
     bracketRows: [],
@@ -203,6 +175,7 @@ function buildBracketRows(rounds = []) {
           .filter(Boolean)
           .map((batter) => ({
             id: `${round.round}-${matchupIndex}-${batter.player?.id || batter.seed}`,
+            matchupId: `${round.round}-${matchupIndex}`,
             round: round.round,
             roundLabel: formatRound(round.round),
             matchup: formatMatchup(matchup),
@@ -220,6 +193,7 @@ function buildBracketRows(rounds = []) {
 
     return (round.batters || []).map((batter) => ({
       id: `${round.round}-${batter.player?.id || batter.seed}`,
+      matchupId: null,
       round: round.round,
       roundLabel: formatRound(round.round),
       matchup: "—",
@@ -274,9 +248,11 @@ function buildPickRows(bracketRows, derbyStatus = {}) {
       status = "Champion";
     } else if (isComplete && !championPickExists && pick.furthestRound === bestPickedRound && bestPickedRound > 0) {
       points = HOME_RUN_DERBY_POINTS;
-      status = `Furthest pick (${formatRound(pick.furthestRound)})`;
+      status = "Eliminated";
+    } else if (isComplete) {
+      status = "Eliminated";
     } else if (pick.latestRow?.isComplete && !pick.latestRow?.isWinner) {
-      status = `Eliminated in ${formatRound(pick.latestRow.round)}`;
+      status = "Eliminated";
     } else if (pick.latestRow?.isWinner) {
       status = pick.latestRow.round >= scheduledRounds
         ? "Awaiting final status"
@@ -299,10 +275,10 @@ function buildPickRows(bracketRows, derbyStatus = {}) {
 }
 
 async function getHomeRunDerbyData() {
-  const derbyEvent = await findHomeRunDerbyEvent();
+  const derbyEvent = HOME_RUN_DERBY_EVENT.season === SEASON ? HOME_RUN_DERBY_EVENT : null;
 
   if (!derbyEvent?.gamePk) {
-    return getEmptyHomeRunDerbyData();
+    return getEmptyHomeRunDerbyData(`Home Run Derby event is not configured for ${SEASON}.`);
   }
 
   const derbyUrl = new URL(`https://statsapi.mlb.com/api/v1/homeRunDerby/${derbyEvent.gamePk}/bracket`);
@@ -337,6 +313,9 @@ async function getHomeRunDerbyData() {
   try {
     const derbyData = await fetchJson(derbyUrl.toString());
     const bracketRows = buildBracketRows(derbyData.rounds || []);
+    if (!bracketRows.length) {
+      return getEmptyHomeRunDerbyData("Home Run Derby results are unavailable from MLB.", derbyEvent);
+    }
     const pickRows = buildPickRows(bracketRows, derbyData.status || {});
     const ownerPoints = Object.fromEntries(
       pickRows.filter((pick) => pick.points > 0).map((pick) => [pick.owner, pick.points]),
@@ -345,7 +324,7 @@ async function getHomeRunDerbyData() {
     return {
       gamePk: derbyEvent.gamePk,
       gameDate: derbyEvent.officialDate || null,
-      statusLabel: derbyData.status?.state || derbyEvent.status?.detailedState || "Scheduled",
+      statusLabel: derbyData.status?.state || "Status unavailable",
       currentRound: derbyData.status?.currentRound || null,
       currentBatter: derbyData.status?.currentBatter?.fullName || null,
       currentRoundTimeLeft: derbyData.status?.currentRoundTimeLeft || null,
@@ -354,7 +333,7 @@ async function getHomeRunDerbyData() {
       ownerPoints,
     };
   } catch {
-    return getEmptyHomeRunDerbyData("Home Run Derby bracket data has not been published yet.");
+    return getEmptyHomeRunDerbyData("Home Run Derby results could not be loaded from MLB.", derbyEvent);
   }
 }
 

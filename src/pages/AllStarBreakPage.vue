@@ -3,6 +3,7 @@
 import { computed, ref, onMounted } from "vue";
 import DataTable from "@/components/DataTable.vue";
 import TabsComponent from "@/components/TabsComponent.vue";
+import DerbyResults from "@/components/DerbyResults.vue";
 import { getAllStarBreakData } from "@/scripts/allstar-break-logic.js";
 
 // Tabs setup
@@ -76,20 +77,6 @@ const hrdPickColumns = [
   },
 ];
 
-const hrdBracketColumns = [
-  { key: "roundLabel", label: "Round", sortable: true, sortValue: (row) => row.round },
-  { key: "matchup", label: "Matchup", sortable: true },
-  { key: "playerName", label: "Player", sortable: true },
-  { key: "seed", label: "Seed", sortable: true },
-  {
-    key: "homeRuns",
-    label: "HR",
-    sortable: true,
-    sortDirection: "desc",
-  },
-  { key: "result", label: "Result", sortable: true },
-];
-
 const leagueTabs = computed(() => [
   {
     id: "al",
@@ -115,9 +102,17 @@ const ownerPointRows = computed(() =>
     .sort((left, right) => right.points - left.points),
 );
 
-const homeRunDerbyPickRows = computed(() => homeRunDerby.value.pickRows || []);
+const homeRunDerbyPickRows = computed(() =>
+  (homeRunDerby.value.pickRows || []).slice().sort((left, right) => right.points - left.points),
+);
 
 const homeRunDerbyBracketRows = computed(() => homeRunDerby.value.bracketRows || []);
+const isDerbyFinal = computed(() => /final|complete/i.test(homeRunDerby.value.statusLabel || ""));
+const furthestPickWinners = computed(() =>
+  isDerbyFinal.value && !homeRunDerbyPickRows.value.some((pick) => pick.status === "Champion")
+    ? homeRunDerbyPickRows.value.filter((pick) => pick.points > 0)
+    : [],
+);
 
 function formatGameDate(dateString) {
   if (!dateString) {
@@ -239,27 +234,9 @@ onMounted(async () => {
     <p class="mb-3">
       Home Run Derby is scored separately from the All-Star Game. A correct winner pick
       earns <b>40</b> points.
-    </p>
-    <p class="mb-3 text-sm text-zinc-600 dark:text-zinc-300">
       If nobody picks the champion, the pick that advanced farthest wins instead. Ties
       still award the full 40 points to each tied winner.
     </p>
-    <div class="mb-6 rounded-md border border-zinc-300 bg-zinc-100 px-4 py-3 text-sm dark:border-zinc-700 dark:bg-zinc-800/70">
-      <p><strong>Status:</strong> {{ homeRunDerby.statusLabel }}</p>
-      <p v-if="formatGameDate(homeRunDerby.gameDate)">
-        <strong>Date:</strong> {{ formatGameDate(homeRunDerby.gameDate) }}
-      </p>
-      <p v-if="homeRunDerby.currentRound">
-        <strong>Current Round:</strong> {{ homeRunDerby.currentRound }}
-      </p>
-      <p v-if="homeRunDerby.currentBatter">
-        <strong>Current Batter:</strong> {{ homeRunDerby.currentBatter }}
-      </p>
-      <p v-if="homeRunDerby.currentRoundTimeLeft">
-        <strong>Time Left:</strong> {{ homeRunDerby.currentRoundTimeLeft }}
-      </p>
-    </div>
-
     <h3 class="mb-2 text-xl font-semibold">Picks</h3>
     <DataTable
       class="mb-8"
@@ -268,11 +245,16 @@ onMounted(async () => {
       row-key="owner"
       empty-message="No Home Run Derby picks have been submitted yet." />
 
-    <h3 class="mb-2 text-xl font-semibold">Derby Tracker</h3>
-    <DataTable
-      :columns="hrdBracketColumns"
+    <p v-if="furthestPickWinners.length" class="mb-6 rounded-lg bg-zinc-100 px-4 py-3 text-sm dark:bg-zinc-700">
+      <strong>Why these points?</strong> Nobody picked the Derby champion.
+      {{ furthestPickWinners.map((pick) => pick.owner).join(' and ') }} receive
+      <strong>40 points each</strong> because their picks advanced farthest.
+      “Eliminated” describes the player's Derby result; it does not prevent an award under this rule.
+    </p>
+
+    <DerbyResults
       :rows="homeRunDerbyBracketRows"
-      row-key="id"
-      empty-message="MLB has not published Home Run Derby bracket data yet." />
+      :picks="homeRunDerbyPickRows"
+      :is-final="isDerbyFinal" />
   </div>
 </template>

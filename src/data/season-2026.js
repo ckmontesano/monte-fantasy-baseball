@@ -32,10 +32,17 @@ export const STAKES = {
 
 export const TOTAL_SEASON_BUY_IN = STAKES.totalCommitment * OWNERS.length;
 
+// Verified MLB All-Star Workout Day event carrying the 2026 Derby bracket.
+export const HOME_RUN_DERBY_EVENT = {
+  season: 2026,
+  gamePk: 838655,
+  officialDate: "2026-07-13",
+};
+
 export const HOME_RUN_DERBY_PICKS = [
   { owner: "Cameron", playerId: 656941, playerName: "Kyle Schwarber" },
   { owner: "Caden", playerId: 808959, playerName: "Munetaka Murakami" },
-  { owner: "Jack", playerId: 547180, playerName: "Kyle Schwarber" },
+  { owner: "Jack", playerId: 656941, playerName: "Kyle Schwarber" },
   { owner: "Dad", playerId: 691406, playerName: "Junior Caminero" },
 ];
 
