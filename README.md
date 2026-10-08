@@ -51,12 +51,12 @@ Balances (net):
 ## Playoffs Display
 
 - The homepage (`#/`, also available at `#/playoffs`) displays live postseason series results and read-only fantasy standings. Regular-season standings, pools, payouts, and September details are at `#/regular-season`.
-- `src/data/playoff-brackets-2026.js` contains the actual pre-playoff submissions for Dad, Cameron, Jack, and Caden (submitted as "Cade"). Predictions use stable slot IDs. Over-length picks are capped at the round's last possible game for scoring and simulations; original lengths are retained and all four adjustments are documented at the bottom of the page.
-- First-place chances use 40,000 seeded simulations of remaining games, starting from actual series scores, with independent 50/50 game probabilities. Joint first-place finishes count for each tied participant, so percentages need not sum to 100%. This is a neutral scenario model, not a betting-odds forecast.
+- `src/data/playoff-brackets-2026.js` contains the actual pre-playoff submissions for Dad, Cameron, Jack, and Caden (submitted as "Cade"). Predictions use stable slot IDs. Over-length picks are capped at the round's last possible game for scoring; original lengths are retained and all four adjustments are documented at the bottom of the page.
+- Fantasy standings show rank, participant, points, correct winners, and exact-length bonuses from completed series.
 - Bracket branches and initial entrants are configured for the 2026 postseason schedule. Later-round entrants advance from completed feeder series; results come from MLB's schedule, not standings flags.
 - Scores update every minute while the page is visible. Cached results are retained with a stale-data notice on failed updates.
 - Sample scores never enter payout history or season balances. With actual validated brackets enabled, the $200 playoff award enters payout history only after all 11 series finish; ties split the pool.
-- Verify scoring and chances: `node --test src/scripts/*.test.js`.
+- Verify scoring: `node --test src/scripts/*.test.js`.
 
 ## Development
 

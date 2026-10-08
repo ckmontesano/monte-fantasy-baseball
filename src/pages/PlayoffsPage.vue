@@ -6,7 +6,6 @@ import { SEASON, TEAM_METADATA, OWNERS, STAKES } from "@/data/season-2026.js";
 import { PLAYOFF_ROUNDS, PLAYOFF_BRACKETS, PICKS_ARE_PLACEHOLDERS, PICK_LENGTH_ADJUSTMENTS } from "@/data/playoff-brackets-2026.js";
 import { usePlayoffs } from "@/composables/usePlayoffs.js";
 import { scoreBrackets } from "@/scripts/playoff-scoring.js";
-import { calculatePlayoffChances, CHANCE_SIMULATIONS } from "@/scripts/playoff-chances.js";
 import getTeamLogoURL from "@/scripts/mlb-team-logos.js";
 
 const { series, error, isLoading, fetchedAt } = usePlayoffs();
@@ -19,7 +18,6 @@ watch(series, (value) => {
   initialized = true;
 });
 const rows = computed(() => scoreBrackets(series.value || [], PLAYOFF_BRACKETS));
-const chances = computed(() => calculatePlayoffChances(series.value || [], PLAYOFF_BRACKETS));
 const completed = computed(() => series.value?.filter((entry) => entry.winnerId).length || 0);
 const currentRound = computed(() => PLAYOFF_ROUNDS.find((round) => round.id ===
   (series.value?.find((entry) => entry.status === "In progress")?.round || series.value?.find((entry) => !entry.winnerId)?.round || "W"))?.label);
@@ -29,7 +27,6 @@ const columns = [
   { key: "rank", label: "Rank" }, { key: "owner", label: "Participant" },
   { key: "totalPoints", label: "Points" }, { key: "correctWinners", label: "Correct winners" },
   { key: "bonuses", label: "Length bonuses" },
-  { key: "winChance", label: "First-place chance" },
 ];
 const pickColumns = [
   { key: "owner", label: "Participant" }, { key: "prediction", label: "Prediction" },
@@ -70,15 +67,8 @@ function predictions(entry) {
         <DataTable :columns="columns" :rows="rows" row-key="owner"
           :row-class="row => row.leader ? 'font-bold bg-zinc-200 dark:bg-zinc-700' : 'odd:bg-zinc-100 odd:dark:bg-zinc-800/70'">
           <template #cell-totalPoints="{ row }">{{ row.totalPoints ?? 'Bracket not provided' }}</template>
-          <template #cell-winChance="{ row }">{{ chances?.[row.owner] == null ? 'Unavailable' : `${chances[row.owner].toFixed(1)}%` }}</template>
         </DataTable>
         <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">Completed series only: 5 / 10 / 20 / 30 points by round. +1 for the exact length when the winner is correct.</p>
-        <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
-          First-place chances are estimates from {{ CHANCE_SIMULATIONS.toLocaleString() }} simulated postseason finishes,
-          starting with current series scores and assuming each remaining game is an independent 50/50 contest.
-          Includes tied first-place finishes (shared winnings), so percentages may exceed 100% in total.
-          This neutral model does not use betting odds or team-strength projections.
-        </p>
         <p v-if="completed === 11" class="mt-3 font-semibold">
           {{ PICKS_ARE_PLACEHOLDERS ? 'Sample winners' : 'Winners' }}:
           {{ rows.filter(row => row.leader).map(row => row.owner).join(', ') }}
@@ -110,7 +100,7 @@ function predictions(entry) {
       </section>
       <section v-if="PICK_LENGTH_ADJUSTMENTS.length" class="rounded-lg border border-zinc-300 p-4 dark:border-zinc-600">
         <h2 class="mb-2 text-xl font-semibold">Series-Length Adjustments</h2>
-        <p class="mb-2 text-sm">Picks exceeding a round's maximum length are rounded down to its last possible game. The adjusted length is used for scoring, including the bonus, and for the winning-chance estimates.</p>
+        <p class="mb-2 text-sm">Picks exceeding a round's maximum length are rounded down to its last possible game. The adjusted length is used for scoring, including the bonus.</p>
         <ul class="ml-5 list-disc space-y-2 text-sm">
           <li v-for="adjustment in PICK_LENGTH_ADJUSTMENTS" :key="`${adjustment.owner}-${adjustment.slot.id}`">
             <strong>{{ adjustment.owner }}</strong> · {{ adjustment.slot.label }}:
